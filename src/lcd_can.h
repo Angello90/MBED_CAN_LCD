@@ -2,7 +2,8 @@
 #define LCD_CAN_H
 
 #include <stdint.h>
-#include <typeinfo> 
+#include <typeinfo>
+#include <mbed.h> 
 
 #define LCD_CAN_10      0x700       
 #define LCD_CAN_11      0x701      
