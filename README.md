@@ -18,6 +18,7 @@ Ce projet implémente une classe permettant de contrôler un l'écran LCD (16x2)
 ```cpp
 
 #include "lcd_can.h"
+
 LCD_CAN lcd;
 int main()
 {
