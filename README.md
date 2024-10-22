@@ -1,4 +1,4 @@
-![z](./assets/LCD.jpg)
+<!-- ![z](./assets/LCD.jpg) -->
 
 # Projet: Utilisation d'un écran LCD en CAN avec MBED
 
