@@ -16,28 +16,27 @@ void LCD_CAN::reset_array()
     }
 }
 
-types_input LCD_CAN::parse(char *str)
+void LCD_CAN::print(char *str, ...)
 {
-    types_input type;
-    for (int i = 0; i < strlen(str); i++)
+    va_list args;
+    va_start(args, str);
+    char buffer[2*16];
+    vsnprintf(buffer, 2*16, str, args);
+    va_end(args);
+
+    for (int i = 0; i < strlen(buffer); i++)
     {
-        if (str[i] == '%')
+        if(p_cursor_y == 0)
         {
-            if (str[i + 1] == 'c')
-            {
-                type = CHAR_;
-            }
-            else if (str[i + 1] == 'd')
-            {
-                type = INT_;
-            }
-            else if (str[i + 1] == 'f')
-            {
-                type = FLOAT_;
-            }
+            if(i < 7) array_value[0][i + p_cursor_x] = buffer[i];
+            else if(i < 16) array_value[1][i - 8 + p_cursor_x] = buffer[i];
+        }
+        else
+        {
+            pass
         }
     }
-    return type;
+    send_can();
 }
 
 void LCD_CAN::setCursor(unsigned char &x, unsigned char &y)
@@ -60,68 +59,31 @@ void LCD_CAN::setCursor()
     p_cursor_y = 0;
 }
 
-template <typename T>
-bool is_same_type(types_input type, T &value)
-{
-    bool same_type = false;
-    if ((type == CHAR_) && (typeid(value).name() == char))
-        same_type = true;
-    else if ((type == INT_) && (typeid(value).name() == int))
-        same_type = true;
-    else if ((type == FLOAT_) && (typeid(value).name() == float))
-        same_type = true;
-    return same_type;
-}
-
-template <typename T>
-void LCD_CAN::print(char *str, T &value)
-{
-    types_input type = parse(str);
-    if (is_same_type(type, value))
-    {
-        for (int i = 0; i < strlen(str); i++)
-        {
-            if (p_cursor_y == 0)
-            {
-                if (i < 7) array_value[0][i + p_cursor_x] = str[i];
-                else array_value[1][i - 8 + p_cursor_x] = str[i];
-            }
-            else if (p_cursor_y == 1)
-            {
-                if (i < 7) array_value[2][i + p_cursor_x] = str[i];
-                else array_value[3][i + p_cursor_x - 8] = str[i];
-            }
-        }
-        send_can();
-    }
-    else
-    {
-        // Error
-    }
-}
-
 void LCD_CAN::actualize_array()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        memccpy(array_msg[i].data, array_value[i], 1, 8);
+    }
+}
+
+void LCD_CAN::init()
 {
     array_msg[0].id = LCD_CAN_10;
     array_msg[1].id = LCD_CAN_11;
     array_msg[2].id = LCD_CAN_21;
     array_msg[3].id = LCD_CAN_22;
 
-    for (int i = 0; i < 4; i++)
+    for(int i = 0; i<4; i++)
     {
-        memcpy(array_msg[i].data[0], array_value[i], 1, 8);
         array_msg[i].len = 8;
         array_msg[i].format = CANStandard;
     }
-}
-
-void LCD_CAN::init()
-{
     reset_array();
     actualize_array();
-    p_cursor_x = 0;
-    p_cursor_y = 0;
     cls_msg.id = LCD_CAN_CLS;
+    clear();
+    setCursor();
 }
 
 void LCD_CAN::clear()
