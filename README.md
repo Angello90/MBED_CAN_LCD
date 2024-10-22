@@ -26,10 +26,13 @@ int main()
     while(true)
     {
         lcd.setCursor(); // x=0, y=0
-        lcd.print("Valeur: %d", val);
+        lcd.print("Valeur: %d", 10);
         lcd.clear();
         lcd.setCursor(1, 1);
         lcd.print("Valeur: %d", val);
+        lcd.clear();
+        lcd.setCursor(1, 1);
+        lcd.print("Hello %s", "world");
     }
 }
 ```
