@@ -27,6 +27,7 @@ void LCD_CAN::print(char *str, ...)
     for (int i = 0; i < strlen(buffer); i++)
     {
         val = i + p_cursor_x;
+
         if(p_cursor_y == 0)
         {
             if(val <= 7)
@@ -36,6 +37,14 @@ void LCD_CAN::print(char *str, ...)
             else if(val <= 15)
             {
                 array_value[1][val - 8] = buffer[i];
+            }
+            else if(val <= 23)
+            {
+                array_value[2][val - 16] = buffer[i];
+            }
+            else if(val <= 31)
+            {
+                array_value[3][val - 24] = buffer[i];
             }
         }
         else
