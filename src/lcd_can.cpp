@@ -23,17 +23,31 @@ void LCD_CAN::print(char *str, ...)
     char buffer[2*16];
     vsnprintf(buffer, 2*16, str, args);
     va_end(args);
-
+    int val;
     for (int i = 0; i < strlen(buffer); i++)
     {
+        val = i + p_cursor_x;
         if(p_cursor_y == 0)
         {
-            if(i < 7) array_value[0][i + p_cursor_x] = buffer[i];
-            else if(i < 16) array_value[1][i - 8 + p_cursor_x] = buffer[i];
+            if(val <= 7)
+            {
+                array_value[0][val] = buffer[i];
+            }
+            else if(val <= 15)
+            {
+                array_value[1][val - 8] = buffer[i];
+            }
         }
         else
         {
-            pass
+            if(val <= 7)
+            {
+                array_value[2][val] = buffer[i];
+            }
+            else if(val <= 15)
+            {
+                array_value[3][val - 8] = buffer[i];
+            }
         }
     }
     send_can();
